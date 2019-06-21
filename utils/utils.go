@@ -19,10 +19,12 @@ package utils
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"math"
 	"math/rand"
+	"net/http"
 	"os"
 	"os/exec"
 	"os/user"
@@ -115,9 +117,60 @@ func GetPassword() string {
 	return password
 }
 
+func RandomColor() ct.Color {
+	rand.Seed(time.Now().UTC().UnixNano())
+	switch randInt(0, 5) {
+	case 0:
+		ct.Foreground(ct.Blue, true)
+		return ct.Blue
+	case 1:
+		ct.Foreground(ct.Red, true)
+		return ct.Red
+	case 2:
+		ct.Foreground(ct.Yellow, true)
+		return ct.Yellow
+	case 3:
+		ct.Foreground(ct.Magenta, true)
+		return ct.Magenta
+	case 4:
+		ct.Foreground(ct.Green, true)
+		return ct.Green
+	}
+	return ct.White
+}
+
+func randInt(min int, max int) int {
+	return min + rand.Intn(max-min)
+}
+
+// DownloadFile downloads a file from a url
+func DownloadFile(filepath string, url string) error {
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // PrintBanner - displays the banner text
 func PrintBanner() {
-	ct.Foreground(ct.Red, true) // set text color to bright red
+	RandomColor()
 
 	fmt.Println(`
  __  __       _ _   _    ____

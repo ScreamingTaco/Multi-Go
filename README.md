@@ -20,6 +20,7 @@ A command line multi-tool made in Go, and aimed at security experts to make life
 - system security audit
 - clean system files
 - secure file deletion / bleach
+- viewing the headlines in the cyber world (ycombinator rss)
 
 ### Plans:
 - file compression/decompression (gzip)
@@ -35,7 +36,7 @@ A command line multi-tool made in Go, and aimed at security experts to make life
 
 ## How to
 
-### Download:
+### Download (pre-compiled):
 [Click here to download](https://github.com/TheRedSpy15/Multi-Go/releases/download/0.6.1/MultiGo_0_6_1)
 
 ### Use
@@ -58,12 +59,18 @@ If the new feature is complete:
 1. Add the case to the switch statement in `main.go`, so your new task can be called.
 2. Finished!
 
-### Build
+### Build from source (requires Go installed)
 ```
 git clone https://github.com/TheRedSpy15/Multi-Go
 cd Multi-Go
 go build
 ```
+or
+```
+go get github.com/TheRedSpy15/Multi-Go
+cd go/src/github.com/TheRedSpy15/Multo-Go
+```
+
 
 ## Important
 Multi Go is intended to be used on linux (mostly Debian & Ubuntu like distros). It might run on Windows. Currently it isn't tested, nor supported! I will eventually work on a Windows patch.

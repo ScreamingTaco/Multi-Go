@@ -18,19 +18,12 @@ package main
 
 // Project TODOS
 // TODO tone down comments & make them more meaningful
-// BODY I went a little overboard when adding them
 // TODO improve 'Scrape'
-// BODY currently is just downloads a single pretty useless file, ideally downloading images is the way to go
 // TODO finish email task
-// BODY doesn't work from my testing, but it should be a quick fix
 // TODO finish decompress (and review compress)
-// BODY decompression doesn't work, and it might be due to compression
 // TODO add 'tshark -r [file path]' task
-// BODY to constantly log network traffic
 // TODO add network scanner
-// BODY ideally it would get all IPs on the network, and their open ports
 // TODO add wifi password cracker
-// BODY using bruteforce
 
 import (
 	"bufio"
@@ -39,15 +32,16 @@ import (
 	"strings"
 
 	"github.com/akamensky/argparse"
-	"github.com/daviddengcn/go-colortext"
+	ct "github.com/daviddengcn/go-colortext"
 
 	"github.com/TheRedSpy15/Multi-Go/tasks"
 	"github.com/TheRedSpy15/Multi-Go/utils"
 )
 
-// TODO: allow user to re-enter task command when invalid & in dialog mode
 func main() {
-	parser := argparse.NewParser("SecureMultiTool", "Runs multiple security orientated tasks")
+	dialogMode := false
+
+	parser := argparse.NewParser("Multi-Go", "Runs multiple security orientated tasks")
 
 	// Create flags
 	t := parser.String("t", "Task", &argparse.Options{Required: false, Help: "Task to run"})
@@ -56,80 +50,91 @@ func main() {
 	err := parser.Parse(os.Args) // parse arguments
 	utils.CheckErr(err)
 
+	reader := bufio.NewReader(os.Stdin) // make reader object
+
 	if *t == "" { // enter dialog mode
-		reader := bufio.NewReader(os.Stdin) // make reader object
+		dialogMode = true
 		utils.PrintBanner()
 		tasks.List()
-
-		fmt.Print("\nEnter task to run: ")
-		choice, _ := reader.ReadString('\n')     // get choice
-		choice = strings.TrimRight(choice, "\n") // trim choice so it can be check against properly
-
-		if strings.Contains(choice, "-r") { // check for optional target
-			inputs := strings.Split(choice, " -r ") // separate task & target
-			*t = inputs[0]
-			*r = inputs[1]
-		} else { // no optional target
-			*t = choice
-		}
 	} else {
 		ct.Foreground(ct.Yellow, false)
 	}
 
-	// Determine task to run
-	switch *t {
-	case "Hash":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.HashFile(*r)
-	case "pwnAccount":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.PwnAccount(*r)
-	case "encryptFile":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.EncryptFile(*r)
-	case "decryptFile":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.DecryptFile(*r)
-	case "Scrape":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.Scrape(*r)
-	case "DOS":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.Dos(*r, nil)
-	case "compress":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.Compress(*r)
-	case "decompress":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.Decompress(*r)
-	case "Firewall":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.ToggleFirewall(*r)
-	case "generatePassword":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.GeneratePassword(*r)
-	case "Install":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.Install(*r)
-	case "Bleach":
-		fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
-		tasks.Bleach(*r)
-	case "systemInfo":
-		tasks.SystemInfo()
-	case "Clean":
-		tasks.Clean()
-	case "Email":
-		tasks.Email()
-	case "Audit":
-		tasks.Audit()
-	case "About":
-		tasks.About()
-	case "List":
-		tasks.List()
-	default: // invalid
-		ct.Foreground(ct.Red, true)
-		fmt.Println("Invalid task -", *t)
-		ct.Foreground(ct.Yellow, false)
-		fmt.Println("Use '--help' or '-t List'")
+	//Only continue execution in dialog mode
+	for contExec := true; contExec; contExec = dialogMode {
+		if dialogMode {
+			fmt.Print("\nEnter task to run: ")
+			choice, _ := reader.ReadString('\n')     // get choice
+			choice = strings.TrimRight(choice, "\n") // trim choice so it can be check against properly
+
+			if strings.Contains(choice, "-r") { // check for optional target
+				inputs := strings.Split(choice, " -r ") // separate task & target
+				*t = inputs[0]
+				*r = inputs[1]
+			} else { // no optional target
+				*t = choice
+			}
+		}
+
+		// Determine task to run
+		switch *t {
+		case "Hash":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.HashFile(*r)
+		case "pwnAccount":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.PwnAccount(*r)
+		case "encryptFile":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.EncryptFile(*r)
+		case "decryptFile":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.DecryptFile(*r)
+		case "Scrape":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.Scrape(*r)
+		case "DOS":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.Dos(*r, nil)
+		case "compress":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.Compress(*r)
+		case "decompress":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.Decompress(*r)
+		case "Firewall":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.ToggleFirewall(*r)
+		case "generatePassword":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.GeneratePassword(*r)
+		case "Install":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.Install(*r)
+		case "Bleach":
+			fmt.Println("\nRunning task:", *t, "\nTarget:", *r)
+			tasks.Bleach(*r)
+		case "cyberNews":
+			tasks.News()
+		case "systemInfo":
+			tasks.SystemInfo()
+		case "Clean":
+			tasks.Clean()
+		case "Email":
+			tasks.Email()
+		case "Audit":
+			tasks.Audit()
+		case "About":
+			tasks.About()
+		case "List":
+			tasks.List()
+		case "Exit":
+			os.Exit(0)
+		default: // invalid
+			ct.Foreground(ct.Red, true)
+			fmt.Println("Invalid task -", *t)
+			ct.Foreground(ct.Yellow, false)
+			fmt.Println("Use '--help' or '-t List'")
+		}
 	}
 }
